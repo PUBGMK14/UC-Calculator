@@ -16,6 +16,14 @@ const data = {
         { price:27500,  totalUC:1800, label:'1,500 + 300 UC' },
         { price:55000,  totalUC:3850, label:'2,950 + 900 UC' },
         { price:110000, totalUC:8100, label:'5,900 + 2,200 UC' }
+    ],
+    midasbuy: [
+        { price:1100,   totalUC:60,   label:'60 UC' },
+        { price:3300,   totalUC:195,  label:'180 + 15 UC' },
+        { price:11000,  totalUC:680,  label:'600 + 80 UC' },
+        { price:27500,  totalUC:1850, label:'1,500 + 350 UC' },
+        { price:55000,  totalUC:3950, label:'2,950 + 1,000 UC' },
+        { price:110000, totalUC:8300, label:'5,900 + 2,400 UC' }
     ]
 };
 
@@ -39,8 +47,10 @@ function selectOS(os) {
     document.getElementById('inputLabel').textContent = '필요한 UC를 입력하세요';
     document.getElementById('mainInput').placeholder = '예: 12000';
     document.getElementById('mainTitle').innerHTML = 'UC 최저가 계산기 <span class="title-badge">BETA</span>';
-    document.getElementById('bonusRow').style.display = os === 'android' ? 'none' : 'flex';
-    document.getElementById('versionTag').textContent = os === 'ios' ? 'v3.1 (iOS)' : 'v3.1 (Android)';
+    // 보너스 체크박스: iOS만 표시
+    document.getElementById('bonusRow').style.display = os === 'ios' ? 'flex' : 'none';
+    const verMap = { ios: 'v3.2 (iOS)', android: 'v3.2 (Android)', midasbuy: 'v3.2 (MidasBuy)' };
+    document.getElementById('versionTag').textContent = verMap[os];
     document.body.className = platform + ' mode-' + mode;
     showPage('calcPage','welcomePage','anim-up');
     setTimeout(function(){ updateMSlider(); }, 50);
@@ -49,15 +59,17 @@ function selectOS(os) {
 
 function goBack() {
     document.body.className = '';
-    document.getElementById('versionTag').textContent = 'v3.1';
+    document.getElementById('versionTag').textContent = 'v3.2';
     showPage('welcomePage','calcPage','anim-down');
 }
+
 function updateMSlider() {
     var s = document.getElementById('mSlider');
     var t = document.getElementById(mode === 'price' ? 'tabPrice' : 'tabUC');
     s.style.left = (t.offsetLeft - 4) + 'px';
     s.style.width = t.offsetWidth + 'px';
 }
+
 function setMode(m) {
     if (mode === m) return;
     mode = m; resetResult();
@@ -95,13 +107,13 @@ function calcMinPrice() {
     var input = document.getElementById('mainInput');
     var resultDiv = document.getElementById('result');
     var btn = document.getElementById('calculateBtn');
-    var bonusOn = document.getElementById('useBonus').checked;
+    var bonusOn = platform === 'ios' && document.getElementById('useBonus').checked;
     var targetUC = parseInt(input.value);
     if (isNaN(targetUC) || targetUC <= 0) return;
     btn.innerHTML = '<span class="loading"></span> 계산중...'; btn.disabled = true;
     setTimeout(function() {
         var pkgs = data[platform];
-        var max = targetUC + 8100;
+        var max = targetUC + 8300;
         var dp = new Array(max + 1).fill(Infinity);
         var ch = new Array(max + 1).fill(-1);
         dp[0] = 0;
@@ -134,7 +146,7 @@ function calcMaxUC() {
     var input = document.getElementById('mainInput');
     var resultDiv = document.getElementById('result');
     var btn = document.getElementById('calculateBtn');
-    var bonusOn = document.getElementById('useBonus').checked;
+    var bonusOn = platform === 'ios' && document.getElementById('useBonus').checked;
     var budget = parseInt(input.value);
     if (isNaN(budget) || budget <= 0) return;
     btn.innerHTML = '<span class="loading"></span> 계산중...'; btn.disabled = true;
